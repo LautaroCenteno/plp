@@ -27,11 +27,23 @@
 --I
 
 --curry :: ((a,b) -> c) -> (a -> b -> c)
+--curry f x y = f (x, y)
 
 --II
 
 --uncurry :: (a -> b -> c) -> ((a,b) -> c)
+--uncurry f (x, y) = f x y
 
 --III
 
 --curryN :: ((a1, ..., an) -> b) -> (a1 -> .. -> an -> b)
+
+--ejercicio 3
+
+--I
+
+--sum :: Num a => [a] -> a
+--sum = foldr (+) 0
+
+--elem
+
