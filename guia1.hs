@@ -42,8 +42,40 @@
 
 --I
 
---sum :: Num a => [a] -> a
---sum = foldr (+) 0
+sum :: Num a => [a] -> a
+sum = foldr (+) 0
+
+--elem :: Eq a => a -> [a] -> Bool
+--elem | 
+
+masmas ::  [a] -> [a] -> [a]
+masmas xs ys = foldr (:) (ys) xs
+
 
 --elem
+
+--II
+mejorSegun :: (a -> a -> Bool) -> [a] -> a
+mejorSegun f xs = foldr1 (\a b -> if f a b then a else b) xs
+
+--III
+--sumasParciales :: Num a => [a] -> [a]
+--sumasParciales 
+
+--ejercicio 4
+
+--I
+--permutaciones:: [a] -> [[a]]
+--permutaciones [] = []
+--permutaciones (x:xs) = 
+--
+
+--ejercicio 5
+
+--elementosEnPosicionesPares NO es estructural, es global
+--entrelazar es recursion estructural.
+--entrelazar:: [a] -> [a]
+--entrelazar [] = id
+--entrelazar (x:xs) ys = if null ys
+--                          then 
 
