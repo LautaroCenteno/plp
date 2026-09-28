@@ -1,6 +1,7 @@
 import Control.Arrow (ArrowZero(zeroArrow))
 import Data.Foldable (Foldable(fold))
 import GHC.Base (DoubleBox)
+import Data.Bifoldable (bifoldl1)
 
 --ejercicio2
 
@@ -125,6 +126,22 @@ foldNat f z n = f (foldNat f z (n-1))
 potencia:: Int -> Int -> Int
 potencia a = foldNat (* a) 1
 
+--ejercicio 16
+data Polinomio a = X
+  | Cte a
+  | Suma (Polinomio a) (Polinomio a)
+  | Prod (Polinomio a) (Polinomio a)
+
+foldPoli :: (a -> b) -> (b -> b -> b) -> ( b -> b -> b) -> b -> Polinomio a -> b
+foldPoli fcte fsuma fprod cb poli = case poli of
+  X -> cb
+  Cte a -> fcte a
+  Suma p1 p2 -> fsuma (foldPoli fcte fsuma fprod cb p1) (foldPoli fcte fsuma fprod cb p2)
+  Prod p1 p2 -> fprod (foldPoli fcte fsuma fprod cb p1) (foldPoli fcte fsuma fprod cb p2)
+
+evaluar :: Num a => a -> Polinomio a -> a
+evaluar = foldPoli id (+) (*)
+
 --Ejercicio 17
 data AB a = Nil | Bin (AB a) a (AB a)
 
@@ -155,3 +172,36 @@ mejorSegunAB :: (a -> a -> Bool) -> AB a -> a
 mejorSegunAB f (Bin i r d) = case 
   foldAB (\i r d rec1 rec2 -> )
     -}
+
+--ejercicio 22
+data Buffer a = Empty | Write Int a (Buffer a) | Read Int (Buffer a) deriving Show
+
+foldBuffer :: b -> (Int -> a -> b -> b) -> (Int -> b -> b) -> Buffer a -> b
+foldBuffer z fw fr b = case b of
+  Empty -> z
+  Write nw aw bw -> fw nw aw (foldBuffer z fw fr bw)
+  Read nr br -> fr nr (foldBuffer z fw fr br)
+
+recBuffer :: b -> (Int -> a -> Buffer a -> b -> b) -> (Int -> Buffer a -> b -> b) -> Buffer a -> b
+recBuffer z fw fr b = case b of
+  Empty -> z
+  Write nw aw bw -> fw nw aw bw (recBuffer z fw fr bw)
+  Read nr br -> fr nr br (recBuffer z fw fr br)
+
+quitar :: Int -> [Int] -> [Int]
+quitar n = foldr (\x rec -> if x == n then rec else x : rec) [] 
+
+pertenece :: Int -> [Int] -> Bool
+pertenece n = foldr (\x rec -> x == n || rec) False
+
+posicionesOcupadas :: Buffer a -> [Int]
+posicionesOcupadas = foldBuffer [] (\i x rc -> i : quitar i rc) (\i rc -> quitar i rc)
+
+contenido::Int -> Buffer a -> Maybe a
+contenido n = foldBuffer Nothing (\i x rc -> if i == n then Just x else rc) (\i rc -> if i == n then Nothing else rc)
+
+puedeCompletarLecturas::Buffer a -> Bool
+puedeCompletarLecturas = recBuffer True (\i x br rc -> rc) (\i br rc -> pertenece i (posicionesOcupadas br) && rc)
+
+deshacer::Buffer a -> Int -> Buffer a
+deshacer = recBuffer (\n -> Empty) (\i x br rc n -> if n > 0 then rc (n-1) else Write i x br) (\i br rc n -> if n > 0 then rc (n-1) else Read i br)
