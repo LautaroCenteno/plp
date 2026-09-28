@@ -1,3 +1,6 @@
+import Control.Arrow (ArrowZero(zeroArrow))
+import Data.Foldable (Foldable(fold))
+import GHC.Base (DoubleBox)
 
 --ejercicio2
 
@@ -12,12 +15,34 @@ uncurry f = \(x,y) -> f x y
 --ejercicio 3
 
 --ejercicio 4
+paresDeNat :: [(Int, Int)]
+paresDeNat = [(x, s - x) | s <- [0 ..], x <- [0 .. s]] -- paresDeNat4 es nuestra solución final
+
+paresDeNat1 = [(x, y) | x <- [0 ..], y <- [0 ..]]
+
+paresDeNat2 =
+  [(x, y) | x <- [0 ..], y <- [0 ..], y <= x]
+
+paresDeNat3 =
+  [(x, y) | x <- [0 ..], y <- [0 .. x]]
+
+paresDeNat4 =
+  [(x, s - x) | s <- [0 ..], x <- [0 .. s]]
+
+paresDeNat5 =
+  [(x, y) | s <- [0 ..], x <- [0 .. s], y <- [0 .. s], x + y == s]
+
 
 --ejercicio 5
 
 --ejercicio 6
+listasQueSuman :: Int -> [[Int]]
+listasQueSuman 0 = [[]]
+listasQueSuman n = [x:xs | x <- [1..n], xs <- listasQueSuman (x-n)]
 
 --ejercicio 7
+listasPositivos :: [[Int]]
+listasPositivos = concatMap listasQueSuman [0..]
 
 --ejercicio 8
 --I
@@ -71,10 +96,62 @@ componerTodas = foldr (.) id
 
 --Ejercicio 10
 --a
---sacarUna :: Eq a => a -> [a] -> [a]
---sacarUna e = recr (\x xs rec -> if x == e then xs else x : rec) []
+recr :: (a -> [a] -> b -> b) -> b -> [a] -> b 
+recr _ z [] = z 
+recr f z (x : xs) = f x xs (recr f z xs)
+
+sacarUna :: Eq a => a -> [a] -> [a]
+sacarUna e = recr (\x xs ys -> if x == e then xs else x : ys) [] 
 --b
 --RESOLVER
 --c
---instertarOrdenado :: Ord a => a -> [a] -> [a]
---insertarOrdenado e = recr (\x xs rec -> if e <= x then e : x : xs else) []
+insertarOrdenado :: Ord a => a -> [a] -> [a]
+insertarOrdenado e = recr (\x xs rec -> if e <= x then e : x : xs else x:rec) [e]
+
+--Ejercicio 11
+{- 
+ElementosEnPosiciones pares usa recurcion global.
+
+
+-}
+
+--Ejercicio 14
+data Nat = Zero | Succ Nat
+
+foldNat:: (a -> a) -> a -> Int -> a
+foldNat f z 0 = z
+foldNat f z n = f (foldNat f z (n-1))
+
+potencia:: Int -> Int -> Int
+potencia a = foldNat (* a) 1
+
+--Ejercicio 17
+data AB a = Nil | Bin (AB a) a (AB a)
+
+foldAB :: (b -> a -> b -> b) -> b -> AB a -> b
+foldAB f z Nil = z
+foldAB f z (Bin i r d) = f (foldAB f z i) r (foldAB f z d)
+
+recAB :: (AB a -> a -> AB a -> b -> b -> b) -> b -> AB a -> b
+recAB f z Nil = z
+recAB f z (Bin i r d) = f i r d (recAB f z i) (recAB f z d)
+
+esNil :: AB a -> Bool
+esNil Nil = True
+esNil _ = False
+
+esNil2 :: AB a -> Bool
+esNil2 a = case a of
+  Nil -> True
+  _ -> False
+
+altura :: AB a -> Int
+altura = foldAB (\rec1 n rec2 -> 1 + max rec1 rec2) 0
+
+cantNodos :: AB a -> Int
+cantNodos = foldAB (\rec1 n rec2 -> rec1 + 1 + rec2) 0
+{- 
+mejorSegunAB :: (a -> a -> Bool) -> AB a -> a
+mejorSegunAB f (Bin i r d) = case 
+  foldAB (\i r d rec1 rec2 -> )
+    -}
