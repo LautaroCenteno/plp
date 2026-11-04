@@ -89,8 +89,10 @@ repartoSinVacias(L,N,[X|LL]):- N > 0, append(X,B,L), X \= [], M is N-1, repartoS
 
 /* Ejercicio 9 */
 % I. Debería instanciarse como desde(+X, +Y)
+
 desde(X,X).
-desde(X,Y) :- N is X+1, desde(N,Y).
+desde(X,Y) :- X < Y, N is X+1, desde(N,Y).
+
 /* Ejercicio 10 */
 intercalar([],L2,L2).
 intercalar(L1,[],L1).
@@ -106,9 +108,9 @@ altura(bin(I,_,R),N) :- altura(I,M), not(altura(R,M)), N is M+1.
 
 /* Ejercicio 12 */
 inorder(nil,[]).
-inorder(bin(nil,R,nil),[R]).
-inorder(bin(I,R,D),L) :- I \= nil, D \= nil, inorder(I,L2), inorder(D,L3), append(L2,[R|L3],L).
-%FALTA ARBOLCONINORDER
+inorder(bin(I,R,D),L) :- inorder(I,L2), inorder(D,L3), append(L2,[R|L3],L).
+arbolConInorder([],nil).
+arbolConInorder(XS,bin(I,R,D)) :- append(A,[R|B],XS), arbolConInorder(A,I), arbolConInorder(B,D).
 
 creciente([]).
 creciente([_]).
@@ -117,3 +119,15 @@ aBB(T) :- inorder(T,L), creciente(L).
 %PENSAR UNA FORMA SIN AUXILIAR
 
 /* Ejercicio 13 */
+coprimos(X,Y) :- between(2,inf,N), between(1,N,X), Y is N-X, gcd(X,Y) =:= 1.
+
+/* Ejercicio 22 
+%caminoSimple(+G,+D,+H,?L)
+caminoSimple(G,D,D,[D]).
+caminoSimple(G,D,H,[D|[V|L]]) :- not(member(D,[V|L])), esNodo(G,D), esNodo(G,H), esArista(G,D,V), caminoSimple(G,V,H,[V|L]).
+
+caminoHamiltoniano(G,[]) :- not(esNodo(G,X)).
+caminoHamiltoniano(G,[D|L]) :- esNodo(G,A), caminoSimple(G), not(())
+*/
+
+
