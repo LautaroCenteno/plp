@@ -126,6 +126,13 @@ foldNat f z n = f (foldNat f z (n-1))
 potencia:: Int -> Int -> Int
 potencia a = foldNat (* a) 1
 
+--Ejercicio 15
+genLista :: a -> (a -> a) -> Integer -> [a]
+genLista k f n = k : genLista (f k) f (n-1)
+
+desdeHasta :: Integer -> Integer -> [Integer]
+desdeHasta i j = genLista i (+ 1) (j-i)
+
 --ejercicio 16
 data Polinomio a = X
   | Cte a

@@ -71,3 +71,9 @@ navesIguales d = foldNave (\n n1 -> case n1 of
 apta :: Nave -> Bool
 apta = foldNave (\n -> False) (\f rec -> rec) (\rec -> rec) (\rec1 rec2 -> rec1 && rec2)
 -}
+
+data HashSet a = Hash (a -> Integer) (Integer -> [a])
+{-
+vacio :: (a -> Integer) -> HashSet a
+vacio = 
+-}
