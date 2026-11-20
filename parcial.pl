@@ -9,7 +9,7 @@ desdeReversible(X, Y) :- nonvar(Y), X =< Y.
 
 esRacha(R) :- not((member(L,R), not(letra(L)))), not((member(L1,R), member(L2,R), L1 \= L2)).
 
-rachaCompleta(P,R) :- append(A,[LB|_],P), append(C,[L|D],A), esRacha([L|D]), R = [L|D], last(C,LC), not(LC = L), not(LB = L).
+rachaCompleta(P,R) :- append(A,B,P), append(C,[L|D],A), esRacha([L|D]), length([L|D],T), R = [L|D], reverse(B,RB), not((last(RB, LRB), LRB = L)), not((last(C,LC), LC = L)).
 
 palabraDeTamaño(1,[L]) :- letra(L).
 palabraDeTamaño(N,[L|P]) :- N > 1, letra(L), M is N-1, palabraDeTamaño(M,P).
